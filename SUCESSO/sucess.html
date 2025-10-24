@@ -7,19 +7,38 @@
 
     <!-- Meta Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1518973295936293');
-    fbq('track', 'PageView');
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js"
+      );
+      fbq("init", "1518973295936293");
+      fbq("track", "PageView");
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1518973295936293&ev=PageView&noscript=1"
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1518973295936293&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
 
@@ -840,7 +859,10 @@
     <!-- Container do vídeo (fora do container principal) -->
     <div class="video-section" id="videoContainer">
       <!-- VTURB SmartPlayer (sucesso) -->
-      <vturb-smartplayer id="vid-68fb1f80bdf9abb2347d00c3" style="display: block; margin: 0 auto; width: 100%; max-width: 400px;"></vturb-smartplayer>
+      <vturb-smartplayer
+        id="vid-68fb1f80bdf9abb2347d00c3"
+        style="display: block; margin: 0 auto; width: 100%; max-width: 400px"
+      ></vturb-smartplayer>
     </div>
 
     <!-- Conteúdo que aparece depois do vídeo -->
@@ -893,17 +915,15 @@
 
         <div class="metabolism-item">
           <div class="metabolism-header">
-            <span class="metabolism-label"
-              >Metabolismo COM o Gelo Secreto</span
-            >
+            <span class="metabolism-label">Metabolismo COM o Gelo Secreto</span>
             <span class="metabolism-percentage com">100%</span>
           </div>
           <div class="metabolism-bar">
             <div class="metabolism-progress com"></div>
           </div>
           <div class="metabolism-description com">
-            Com o Plano do Gelo Secreto, seus hormônios emagrecedores trabalham 24h
-            queimando gordura automaticamente.
+            Com o Plano do Gelo Secreto, seus hormônios emagrecedores trabalham
+            24h queimando gordura automaticamente.
           </div>
         </div>
       </div>
@@ -1075,7 +1095,6 @@
           color: white;
         "
       >
-
         <div
           style="
             background: white;
@@ -1255,6 +1274,12 @@
     </script>
 
     <!-- Script do VTURB SmartPlayer (sucesso) -->
-    <script type="text/javascript"> var s=document.createElement("script"); s.src="https://scripts.converteai.net/134f9e89-27f7-4f0e-aa6f-1db6e83eeca5/players/68fb1f80bdf9abb2347d00c3/v4/player.js", s.async=!0,document.head.appendChild(s); </script>
+    <script type="text/javascript">
+      var s = document.createElement("script");
+      (s.src =
+        "https://scripts.converteai.net/134f9e89-27f7-4f0e-aa6f-1db6e83eeca5/players/68fb1f80bdf9abb2347d00c3/v4/player.js"),
+        (s.async = !0),
+        document.head.appendChild(s);
+    </script>
   </body>
 </html>
