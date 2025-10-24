@@ -4,6 +4,10 @@
     { "src": "**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "./?(.*)", "dest": "/$1" }
+    { "src": "/", "dest": "/src/index.html" },
+    { "src": "/questionario.html", "dest": "/questionario.html" },
+    { "src": "/resultado.html", "dest": "/resultado.html" },
+    { "src": "/SUCESSO/(.*)", "dest": "/SUCESSO/$1" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
