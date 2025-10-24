@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resultado - Gelo Secreto</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #f0f8f0, #e8f5e8);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .logo {
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .logo img {
+        max-width: 200px;
+        height: auto;
+      }
+
+      .result-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .intro-text {
+        color: #333;
+        font-size: 18px;
+        line-height: 1.4;
+        margin-bottom: 30px;
+      }
+
+      .intro-text .highlight {
+        color: #00d084;
+        font-weight: bold;
+      }
+
+      .imc-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        border: 2px solid #e9ecef;
+      }
+
+      .imc-title {
+        color: #333;
+        font-size: 18px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .imc-value {
+        font-size: 48px;
+        font-weight: bold;
+        color: #00d084;
+        margin: 20px 0;
+      }
+
+      .imc-status {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff9500;
+        margin-bottom: 15px;
+      }
+
+      .alert-badge {
+        background: #dc3545;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+
+      .imc-scale {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .scale-bar {
+        height: 8px;
+        background: linear-gradient(
+          to right,
+          #28a745,
+          #ffc107,
+          #fd7e14,
+          #dc3545
+        );
+        border-radius: 10px;
+        margin: 10px 0;
+        position: relative;
+      }
+
+      .scale-indicator {
+        position: absolute;
+        top: -5px;
+        width: 3px;
+        height: 18px;
+        background: #333;
+        border-radius: 2px;
+        left: 65%; /* Posição do IMC 28.5 */
+      }
+
+      .zone-alert {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        font-weight: bold;
+        color: #856404;
+      }
+
+      .warning-section {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 0 10px 10px 0;
+      }
+
+      .warning-icon {
+        color: #ffc107;
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      .warning-title {
+        color: #856404;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+
+      .warning-text {
+        color: #856404;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .problems-list {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: left;
+      }
+
+      .problems-title {
+        color: #721c24;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .problem-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 10px 0;
+        color: #721c24;
+        font-size: 14px;
+      }
+
+      .solution-section {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: left;
+      }
+
+      .solution-title {
+        color: #155724;
+        font-weight: bold;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .solution-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 10px 0;
+        color: #155724;
+        font-size: 14px;
+      }
+
+      .testimonial-section {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 30px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .testimonial-title {
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .transformation-images {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin: 20px 0;
+      }
+
+      .transformation-images img {
+        width: 110px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .next-btn {
+        background: linear-gradient(135deg, #00d084, #00b86f);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 18px 60px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 30px;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .next-btn:hover {
+        background: linear-gradient(135deg, #00b86f, #00a85e);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 208, 132, 0.3);
+      }
+
+      .body-option:hover {
+        border-color: #00d084 !important;
+        background: #f8fdf8 !important;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .result-container {
+          padding: 30px 20px;
+          margin: 0 15px;
+        }
+
+        .imc-value {
+          font-size: 36px;
+        }
+
+        .transformation-images img {
+          width: 90px;
+          height: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Logo -->
+    <div class="logo">
+      <img src="logo.png" alt="Gelo Secreto" />
+    </div>
+
+    <!-- Result Container -->
+    <div class="result-container">
+      <p class="intro-text">
+        Veja como o <span class="highlight">Gelo Secreto</span> está
+        transformando vidas e veja os resultados da nossa comunidade!
+      </p>
+
+      <!-- IMC Card -->
+      <div class="imc-card">
+        <h3 class="imc-title">Índice de Massa Corporal (IMC)</h3>
+
+        <div class="imc-value" id="imc-value">28.8</div>
+
+        <div class="imc-status" id="imc-status">Sobrepeso</div>
+
+        <div class="alert-badge">Você está aqui</div>
+
+        <div class="imc-scale">
+          <span>Abaixo do Peso</span>
+          <span>Normal</span>
+          <span>Sobrepeso</span>
+          <span>Obesidade</span>
+        </div>
+
+        <div class="scale-bar">
+          <div class="scale-indicator" id="scale-indicator"></div>
+        </div>
+
+        <div class="zone-alert">Zona de Alerta</div>
+      </div>
+
+      <!-- Warning Section -->
+      <div class="warning-section">
+        <div class="warning-title">
+          <span class="warning-icon">⚠️</span>
+          Seu metabolismo pode estar te sabotando sem que você perceba!
+        </div>
+        <p class="warning-text">
+          Mesmo estando no peso normal, seu corpo pode estar retendo toxinas e
+          trabalhando de forma mais lenta, dificultando a queima de gordura e
+          deixando você com menos energia.
+        </p>
+      </div>
+
+      <!-- Problems List -->
+      <div class="problems-list">
+        <div class="problems-title">
+          <span style="color: #dc3545">🔴</span>
+          Alguns sinais de alerta:
+        </div>
+
+        <div class="problem-item">
+          <span>❌</span>
+          <span
+            >Metabolismo lento e dificuldade para emagrecer mesmo comendo
+            pouco.</span
+          >
+        </div>
+
+        <div class="problem-item">
+          <span>❌</span>
+          <span>Cansaço constante e sensação de inchaço.</span>
+        </div>
+
+        <div class="problem-item">
+          <span>❌</span>
+          <span
+            >Acúmulo de gordura em áreas específicas do corpo, principalmente na
+            barriga.</span
+          >
+        </div>
+      </div>
+
+      <!-- Solution Section -->
+      <div class="solution-section">
+        <div class="solution-title">
+          <span style="color: #28a745">✅</span>
+          Com o Gelo Secreto, seu corpo acelera a queima de gordura
+          naturalmente!
+        </div>
+
+        <div class="solution-item">
+          <span>•</span>
+          <span
+            >A combinação ideal de ingredientes pode ativar seu metabolismo,
+            reduzir a retenção de líquidos e aumentar sua disposição</span
+          >
+        </div>
+
+        <div class="solution-item">
+          <span>•</span>
+          <span
+            >Descubra agora como o Gelo Secreto pode transformar seu
+            corpo!</span
+          >
+        </div>
+      </div>
+
+      <!-- Testimonial Section -->
+      <div class="testimonial-section">
+        <h4 class="testimonial-title">Veja a transformação da Silvia!</h4>
+
+        <div class="transformation-images">
+          <img
+            src="silva-transformacao.png"
+            alt="Transformação Silvia"
+            style="width: 100%; max-width: 300px; height: auto"
+          />
+        </div>
+      </div>
+
+      <button class="next-btn" onclick="showBodyQuestion();">
+        Próxima Etapa
+      </button>
+
+      <!-- Pergunta Corpo dos Sonhos (inicialmente oculta) -->
+      <div
+        class="body-question-section"
+        id="body-question"
+        style="
+          display: none;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #f0f8f0, #e8f5e8);
+          text-align: center;
+          padding: 40px 20px;
+        "
+      >
+        <div class="logo" style="margin: 20px 0">
+          <img
+            src="logo.png"
+            alt="Gelo Secreto"
+            style="max-width: 150px"
+          />
+        </div>
+
+        <div
+          style="
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+          "
+        >
+          <h2 style="color: #333; font-size: 28px; margin-bottom: 20px">
+            Qual o <span style="color: #00d084">corpo dos sonhos</span>?
+          </h2>
+          <p style="margin-bottom: 30px; color: #666; font-size: 16px">
+            Escolha a opção abaixo:
+          </p>
+
+          <div
+            class="body-options"
+            style="
+              display: flex;
+              gap: 20px;
+              justify-content: center;
+              margin: 40px 0;
+            "
+          >
+            <div
+              class="body-option"
+              onclick="selectBodyOption('em-forma')"
+              style="
+                text-align: center;
+                padding: 20px;
+                border: 2px solid #e8f5e8;
+                border-radius: 15px;
+                cursor: pointer;
+                flex: 1;
+                max-width: 150px;
+                transition: all 0.3s ease;
+              "
+            >
+              <img
+                src="emforma.png"
+                alt="Em forma"
+                style="
+                  width: 100%;
+                  height: 150px;
+                  object-fit: cover;
+                  border-radius: 10px;
+                  margin-bottom: 10px;
+                "
+              />
+              <div style="font-weight: bold; color: #333">Em forma</div>
+            </div>
+            <div
+              class="body-option"
+              onclick="selectBodyOption('natural')"
+              style="
+                text-align: center;
+                padding: 20px;
+                border: 2px solid #e8f5e8;
+                border-radius: 15px;
+                cursor: pointer;
+                flex: 1;
+                max-width: 150px;
+                transition: all 0.3s ease;
+              "
+            >
+              <img
+                src="natural.png"
+                alt="Natural"
+                style="
+                  width: 100%;
+                  height: 150px;
+                  object-fit: cover;
+                  border-radius: 10px;
+                  margin-bottom: 10px;
+                "
+              />
+              <div style="font-weight: bold; color: #333">Natural</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Função para mostrar IMC fixo
+      function calculateIMC() {
+        // IMC sempre fixo em 28.8 e status Sobrepeso
+        const imc = 28.8;
+        const status = "Sobrepeso";
+        const position = 65; // Posição no sobrepeso
+
+        // Atualizar display do IMC
+        document.getElementById("imc-value").textContent = imc;
+        document.getElementById("imc-status").textContent = status;
+        document.getElementById("scale-indicator").style.left = position + "%";
+
+        // Cor laranja para sobrepeso
+        document.getElementById("imc-status").style.color = "#ff9500";
+      }
+
+      function goToNextStep() {
+        // Redirecionar para a próxima página (oferta)
+        // window.location.href = 'oferta.html';
+      }
+
+      function showBodyQuestion() {
+        // Esconder todo o conteúdo atual
+        document.body.innerHTML = `
+                <div style="min-height: 100vh; background: linear-gradient(135deg, #f0f8f0, #e8f5e8); text-align: center; padding: 40px 20px;">
+                    <div style="margin: 20px 0;">
+                        <img src="logo.png" alt="Gelo Secreto" style="max-width: 150px;">
+                    </div>
+
+                    <div style="background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 40px; max-width: 500px; margin: 0 auto;">
+                        <h2 style="color: #333; font-size: 28px; margin-bottom: 20px;">Qual o <span style="color: #00d084;">corpo dos sonhos</span>?</h2>
+                        <p style="margin-bottom: 30px; color: #666; font-size: 16px;">Escolha a opção abaixo:</p>
+
+                        <div style="display: flex; gap: 20px; justify-content: center; margin: 40px 0;">
+                            <div onclick="selectBodyOption('em-forma')" style="text-align: center; padding: 20px; border: 2px solid #e8f5e8; border-radius: 15px; cursor: pointer; flex: 1; max-width: 150px; transition: all 0.3s ease;">
+                                <img src="emforma.png" alt="Em forma" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
+                                <div style="font-weight: bold; color: #333;">Em forma</div>
+                            </div>
+                            <div onclick="selectBodyOption('natural')" style="text-align: center; padding: 20px; border: 2px solid #e8f5e8; border-radius: 15px; cursor: pointer; flex: 1; max-width: 150px; transition: all 0.3s ease;">
+                                <img src="natural.png" alt="Natural" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
+                                <div style="font-weight: bold; color: #333;">Natural</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        // Adicionar a função selectBodyOption ao window
+        window.selectBodyOption = function (option) {
+          localStorage.setItem("bodyChoice", option);
+
+          // Feedback visual
+          event.target.style.borderColor = "#00d084";
+          event.target.style.background = "#f8fdf8";
+
+          // Redirecionar após 1 segundo
+            setTimeout(() => {
+            window.location.href = "SUCESSO/sucess.html";
+          }, 1000);
+        };
+      }
+
+      function selectBodyOption(option) {
+        // Armazenar a escolha
+        localStorage.setItem("bodyChoice", option);
+
+        // Adicionar efeito visual de seleção
+        const options = document.querySelectorAll(".body-option");
+        options.forEach((opt) => {
+          opt.style.borderColor = "#e8f5e8";
+          opt.style.background = "white";
+        });
+
+        // Destacar opção selecionada
+        const selectedOption = event.target.closest(".body-option");
+        selectedOption.style.borderColor = "#00d084";
+        selectedOption.style.background = "#f8fdf8";
+
+        // Aguardar um pouco e redirecionar para página de sucesso
+        setTimeout(() => {
+          window.location.href = "SUCESSO/index.html";
+        }, 1000);
+      }
+
+      // Calcular IMC quando a página carregar
+      window.onload = function () {
+        calculateIMC();
+      };
+    </script>
+  </body>
+</html>

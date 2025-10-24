@@ -1,0 +1,14 @@
+{
+  "environment": "development",
+  "apiEndpoints": {
+    "videoProvider": "https://cdn.converteai.net",
+    "tracking": "https://tracking.buygoods.com",
+    "analytics": "https://analytics.google.com"
+  },
+  "videoSettings": {
+    "autoplay": false,
+    "controls": true,
+    "responsive": true,
+    "qualityLevels": ["360p", "480p", "720p"]
+  }
+}

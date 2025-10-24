@@ -1,0 +1,49 @@
+# Dependências
+node_modules/
+package-lock.json
+yarn.lock
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build/Dist
+dist/
+build/
+*.min.css.map
+*.min.js.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+*.cache
+
+# Temporários
+temp/
+tmp/
+*.tmp
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Variáveis sensíveis
+config/.env
+config/config.local.json
+
+# Vídeos grandes (se houver)
+# public/videos/raw/

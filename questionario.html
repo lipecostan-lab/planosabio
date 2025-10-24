@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz - Gelo Secreto</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #f0f7ff, #e8f0fb);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .logo {
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .logo img {
+        max-width: 150px;
+        height: auto;
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 30px;
+      }
+
+      #greeting {
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        color: #1565c0;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: none;
+      }
+      .personal-name {
+        color: #1565c0;
+        font-weight: 700;
+        margin-right: 6px;
+      }
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #1e88e5, #1565c0);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+
+      .quiz-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .question {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .question.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        color: #333;
+        font-size: 28px;
+        line-height: 1.3;
+        margin-bottom: 20px;
+      }
+
+      .highlight {
+        color: #1e88e5;
+        font-weight: bold;
+      }
+
+      p {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 30px;
+        line-height: 1.5;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 30px 0;
+      }
+
+      .option {
+        background: #f8fbff;
+        border: 2px solid #e8f0fb;
+        border-radius: 15px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        text-align: left;
+      }
+
+      .option:hover {
+        border-color: #1e88e5;
+        background: #f0f7ff;
+        transform: translateY(-2px);
+      }
+
+      .option.selected {
+        border-color: #1e88e5;
+        background: #e8f0fb;
+        transform: translateY(-2px);
+      }
+
+      .option-icon {
+        font-size: 24px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+
+      .option-text {
+        font-size: 16px;
+        color: #333;
+        line-height: 1.4;
+        flex: 1;
+      }
+
+      .name-input {
+        background: #f8fbff;
+        border: 2px solid #e8f0fb;
+        border-radius: 15px;
+        padding: 20px;
+        font-size: 16px;
+        width: 100%;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .name-input:focus {
+        outline: none;
+        border-color: #1e88e5;
+      }
+
+      .continue-btn {
+        background: linear-gradient(135deg, #1e88e5, #1565c0);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 18px 60px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .continue-btn:hover {
+        background: linear-gradient(135deg, #1565c0, #0d47a1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(30, 136, 229, 0.25);
+      }
+
+      .continue-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .result-container {
+        background: #f0f7ff;
+        border: 2px solid #1e88e5;
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .result-title {
+        color: #1e88e5;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .result-diagram {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .testimonial {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .stars {
+        color: #ffd700;
+        font-size: 20px;
+        margin: 10px 0;
+      }
+
+      .benefits-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 30px 0;
+      }
+
+      .benefit-item {
+        background: #f8fbff;
+        border: 2px solid #e8f0fb;
+        border-radius: 15px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+      }
+
+      .benefit-item:hover,
+      .benefit-item.selected {
+        border-color: #1e88e5;
+        background: #e8f0fb;
+      }
+
+      .benefit-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        margin-right: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .benefit-checkbox.checked {
+        background: #1e88e5;
+        border-color: #1e88e5;
+      }
+
+      .benefit-checkbox.checked::after {
+        content: "✓";
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+
+      @media (max-width: 480px) {
+        .quiz-container {
+          padding: 30px 20px;
+          margin: 10px;
+        }
+
+        h2 {
+          font-size: 24px;
+        }
+
+        .option {
+          padding: 15px;
+        }
+
+        .option-text {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Logo -->
+    <div class="logo">
+      <img src="logo.png" alt="Gelo Secreto" />
+    </div>
+
+    <div id="greeting">
+      Olá, <span id="user-name-greeting"></span> — vamos continuar!
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span id="progress-text">Pergunta 1 de 16</span>
+        <span id="progress-percent">6%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 6%"></div>
+      </div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container">
+      <!-- Pergunta 1 -->
+      <div class="question active" data-question="1">
+        <h2>
+          Quantos <span class="highlight">quilos</span> você deseja perder?
+        </h2>
+        <p>
+          O plano do Gelo Secreto ajuda a eliminar gordura de forma acelerada.
+        </p>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'ate-5kg')">
+            <span class="option-text">Até 5 kg</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '6-10kg')">
+            <span class="option-text">De 6 a 10 kg</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '11-15kg')">
+            <span class="option-text">De 11 a 15 kg</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '16-20kg')">
+            <span class="option-text">De 16 a 20 kg</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'mais-20kg')">
+            <span class="option-text">Mais de 20 kg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 2 -->
+      <div class="question" data-question="2">
+        <h2>
+          Como você classificaria<br />seu
+          <span class="highlight">corpo</span> hoje?
+        </h2>
+        <div class="options">
+          <div
+            class="option"
+            onclick="selectOption(this, 'regular')"
+            style="flex-direction: row"
+          >
+            <img
+              src="regular.png"
+              alt="Regular"
+              style="
+                width: 60px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-right: 15px;
+              "
+            />
+            <span class="option-text">Regular</span>
+          </div>
+          <div
+            class="option"
+            onclick="selectOption(this, 'flacido')"
+            style="flex-direction: row"
+          >
+            <img
+              src="flacido.png"
+              alt="Flácido"
+              style="
+                width: 60px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-right: 15px;
+              "
+            />
+            <span class="option-text">Flácido</span>
+          </div>
+          <div
+            class="option"
+            onclick="selectOption(this, 'sobrepeso')"
+            style="flex-direction: row"
+          >
+            <img
+              src="sobrepeso.png"
+              alt="Sobrepeso"
+              style="
+                width: 60px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-right: 15px;
+              "
+            />
+            <span class="option-text">Sobrepeso</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 3 -->
+      <div class="question" data-question="3">
+        <h2>
+          Em qual área do seu corpo você gostaria de
+          <span class="highlight">reduzir mais gordura</span>?
+        </h2>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'culotes')">
+            <span class="option-text">Região dos Culotes</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'coxas')">
+            <span class="option-text">Região das Coxas</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'abdomen')">
+            <span class="option-text">Região do Abdômen (barriga)</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'gluteos')">
+            <span class="option-text">Região dos Glúteos</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'bracos')">
+            <span class="option-text">Região dos Braços</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 4 -->
+      <div class="question" data-question="4">
+        <h2>Qual seu <span class="highlight">nome</span>?</h2>
+        <p style="color: #666; font-size: 14px">
+          Para montar seu plano personalizado, precisamos do seu nome.<br />Seus
+          dados estão protegidos 🔒
+        </p>
+        <input
+          type="text"
+          id="user-name"
+          class="name-input"
+          placeholder="Digite seu nome..."
+          oninput="checkName()"
+        />
+        <button
+          class="continue-btn"
+          id="name-continue"
+          onclick="nextQuestion()"
+          disabled
+        >
+          Continuar
+        </button>
+      </div>
+
+      <!-- Pergunta 5 -->
+      <div class="question" data-question="5">
+        <h2>
+          Como o seu <span class="highlight">peso</span> impacta sua vida?
+        </h2>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'vergonha')">
+            <span class="option-icon">📷</span>
+            <span class="option-text"
+              >Evito tirar fotos porque tenho vergonha</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'parceiro')">
+            <span class="option-icon">❤️</span>
+            <span class="option-text"
+              >Meu parceiro não me olha mais com desejo como antes</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'social')">
+            <span class="option-icon">😔</span>
+            <span class="option-text"
+              >Evito encontros sociais porque não me sinto bem comigo
+              mesma.</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'nenhuma')">
+            <span class="option-icon">🤷</span>
+            <span class="option-text">Nenhuma das opções.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 6 -->
+      <div class="question" data-question="6">
+        <h2>
+          Você está realmente <span class="highlight">feliz</span> com sua
+          aparência?
+        </h2>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'nao-acima')">
+            <span class="option-icon">😔</span>
+            <span class="option-text">Não, porque me sinto acima do peso</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'sim-saude')">
+            <span class="option-icon">❤️</span>
+            <span class="option-text"
+              >Sim, mas sei que posso melhorar minha saúde</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'nao-bem-estar')">
+            <span class="option-icon">😔</span>
+            <span class="option-text"
+              >Não, gostaria de perder peso para melhorar meu bem-estar</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 7 -->
+      <div class="question" data-question="7">
+        <h2>
+          O que mais te impede de <span class="highlight">emagrecer</span>?
+        </h2>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'tempo')">
+            <span class="option-icon">⏰</span>
+            <span class="option-text">Falta de tempo — Rotina agitada.</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'autocontrole')">
+            <span class="option-icon">🍔</span>
+            <span class="option-text"
+              >Autocontrole — Dificuldade em resistir a tentações
+              alimentares.</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'financeiro')">
+            <span class="option-icon">💰</span>
+            <span class="option-text"
+              >Financeiro — Opções saudáveis mais caras que as
+              processadas.</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 8 -->
+      <div class="question" data-question="8">
+        <h2>Nosso protocolo Resolve isso pra você!</h2>
+        <div class="result-container">
+          <div class="result-title">COMO FUNCIONA O<br />O GELO SECRETO</div>
+          <div class="result-diagram">
+            <img
+              src="imagemprotocoloquiz.png"
+              alt="Plano do Gelo Secreto"
+              style="
+                width: 100%;
+                max-width: 400px;
+                height: auto;
+                border-radius: 10px;
+              "
+            />
+          </div>
+          <p style="font-size: 14px; color: #666; margin: 20px 0">
+            o Gelo Secreto age enquanto você dorme, queimando gordura de forma
+            acelerada!
+          </p>
+          <button class="continue-btn" onclick="nextQuestion()">
+            Continuar
+          </button>
+        </div>
+      </div>
+
+      <!-- Pergunta 9 -->
+      <div class="question" data-question="9">
+        <h2>Quais desses benefícios você gostaria de ter?</h2>
+        <p>Vamos personalizar a sua fórmula para maximizar os resultados.</p>
+        <div class="benefits-list">
+          <div class="benefit-item" onclick="toggleBenefit(this, 'emagrecer')">
+            <div class="benefit-checkbox" id="check-emagrecer"></div>
+            <span>👍 Emagrecer sem esforço e sem efeito sanfona</span>
+          </div>
+          <div class="benefit-item" onclick="toggleBenefit(this, 'sono')">
+            <div class="benefit-checkbox" id="check-sono"></div>
+            <span>👍 Sono mais profundo</span>
+          </div>
+          <div class="benefit-item" onclick="toggleBenefit(this, 'autoestima')">
+            <div class="benefit-checkbox" id="check-autoestima"></div>
+            <span>👍 Aumento da autoestima e confiança</span>
+          </div>
+          <div class="benefit-item" onclick="toggleBenefit(this, 'estresse')">
+            <div class="benefit-checkbox" id="check-estresse"></div>
+            <span>👍 Redução do estresse e ansiedade</span>
+          </div>
+        </div>
+        <button class="continue-btn" onclick="nextQuestion()">Continuar</button>
+      </div>
+
+      <!-- Pergunta 10 -->
+      <div class="question" data-question="10">
+        <h2 style="color: #ff6600">🏆 Histórias Reais de Transformação!</h2>
+        <p style="color: #666; font-size: 14px">
+          📍 Depoimento: Fernanda - Porto Alegre-RS
+        </p>
+
+        <div class="testimonial">
+          <img
+            src="depoimentotransformacao.jpg"
+            alt="Transformação Fernanda"
+            style="
+              width: 100%;
+              max-width: 400px;
+              height: auto;
+              border-radius: 15px;
+              margin: 20px 0;
+            "
+          />
+
+          <div class="stars">★★★★★</div>
+
+          <p
+            style="
+              font-size: 14px;
+              color: #333;
+              line-height: 1.4;
+              margin: 15px 0;
+            "
+          >
+            "Eu já tinha tentado de tudo para emagrecer, mas nada funcionava.
+            Descobri a fórmula do Gelo Secreto na internet, comecei a usar junto
+            com mudança nada na minha alimentação. O mais incrível é que minha
+            fome diminuiu drasticamente e estou emagrecendo naturalmente."
+          </p>
+
+          <div style="font-weight: bold; color: #333; margin-top: 15px">
+            Fernanda Oliveira<br />
+            <span style="font-weight: normal; color: #666; font-size: 12px"
+              >Porto Alegre, RS</span
+            >
+          </div>
+        </div>
+
+        <button class="continue-btn" onclick="answerTestimonial()">
+          Continuar
+        </button>
+      </div>
+
+      <!-- Pergunta 11 -->
+      <div class="question" data-question="11">
+        <h2>Qual é o seu <span class="highlight">peso</span> atual?</h2>
+        <p>Vamos ajustar seu plano de acordo com seu corpo.</p>
+
+        <div style="text-align: center; margin: 40px 0">
+          <div
+            style="
+              font-size: 72px;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 10px;
+            "
+          >
+            <span id="weight-display">70</span
+            ><span style="font-size: 36px">kg</span>
+          </div>
+
+          <div style="margin: 30px 0">
+            <input
+              type="range"
+              id="weight-slider"
+              min="40"
+              max="150"
+              value="70"
+              style="
+                width: 100%;
+                height: 8px;
+                background: #e0e0e0;
+                border-radius: 5px;
+                outline: none;
+              "
+              oninput="updateWeight(this.value)"
+            />
+          </div>
+
+          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
+          <p style="font-size: 12px; color: #999; margin-top: 20px">
+            Baseado nisso, ajustaremos a dosagem ideal para os melhores
+            resultados!
+          </p>
+        </div>
+
+        <button class="continue-btn" onclick="nextQuestion()">Continuar</button>
+      </div>
+
+      <!-- Pergunta 12 -->
+      <div class="question" data-question="12">
+        <h2>Qual é a sua <span class="highlight">altura</span>?</h2>
+        <p>Isso nos ajudará a calcular a quantidade exata.</p>
+
+        <div style="text-align: center; margin: 40px 0">
+          <div
+            style="
+              font-size: 72px;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 10px;
+            "
+          >
+            <span id="height-display">170</span
+            ><span style="font-size: 36px">cm</span>
+          </div>
+
+          <div style="margin: 30px 0">
+            <input
+              type="range"
+              id="height-slider"
+              min="140"
+              max="200"
+              value="170"
+              style="
+                width: 100%;
+                height: 8px;
+                background: #e0e0e0;
+                border-radius: 5px;
+                outline: none;
+              "
+              oninput="updateHeight(this.value)"
+            />
+          </div>
+
+          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
+          <p style="font-size: 12px; color: #999; margin-top: 20px">
+            Baseado nisso, ajustaremos a dosagem ideal para os melhores
+            resultados!
+          </p>
+        </div>
+
+        <button class="continue-btn" onclick="nextQuestion()">Continuar</button>
+      </div>
+
+      <!-- Pergunta 13 -->
+      <div class="question" data-question="13">
+        <h2>Qual é o seu objetivo de <span class="highlight">peso</span>?</h2>
+        <p>
+          Isso nos ajudará a personalizar um plano especificamente para você.
+        </p>
+
+        <div style="text-align: center; margin: 40px 0">
+          <div
+            style="
+              font-size: 72px;
+              font-weight: bold;
+              color: #333;
+              margin-bottom: 10px;
+            "
+          >
+            <span id="goal-weight-display">70</span
+            ><span style="font-size: 36px">kg</span>
+          </div>
+
+          <div style="margin: 30px 0">
+            <input
+              type="range"
+              id="goal-weight-slider"
+              min="40"
+              max="120"
+              value="70"
+              style="
+                width: 100%;
+                height: 8px;
+                background: #e0e0e0;
+                border-radius: 5px;
+                outline: none;
+              "
+              oninput="updateGoalWeight(this.value)"
+            />
+          </div>
+
+          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
+          <p style="font-size: 12px; color: #999; margin-top: 20px">
+            Baseado nisso, ajustaremos a dosagem ideal para os melhores
+            resultados!
+          </p>
+        </div>
+
+        <button class="continue-btn" onclick="nextQuestion()">Continuar</button>
+      </div>
+
+      <!-- Pergunta 14 -->
+      <div class="question" data-question="14">
+        <h2>Como é o seu dia a dia?</h2>
+        <p>Sua rotina diária também faz diferença!</p>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'trabalho-fora')">
+            <span class="option-icon">😊</span>
+            <span class="option-text"
+              >Trabalho fora e tenho uma rotina agitada</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'trabalho-casa')">
+            <span class="option-icon">😊</span>
+            <span class="option-text"
+              >Trabalho em casa e tenho uma rotina flexível</span
+            >
+          </div>
+          <div class="option" onclick="selectOption(this, 'casa-familia')">
+            <span class="option-icon">👨‍👩‍👧‍👦</span>
+            <span class="option-text">Fico em casa cuidando da família</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'outro')">
+            <span class="option-icon">😊</span>
+            <span class="option-text">Outro</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 15 -->
+      <div class="question" data-question="15">
+        <h2>Quantas horas de sono você tem por noite?</h2>
+        <p>A qualidade do seu sono impacta diretamente no seu emagrecimento!</p>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'menos-5')">
+            <span class="option-icon">😴</span>
+            <span class="option-text">Menos de 5 horas</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '5-7')">
+            <span class="option-icon">😴</span>
+            <span class="option-text">Entre 5 e 7 horas</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '7-9')">
+            <span class="option-icon">😴</span>
+            <span class="option-text">Entre 7 e 9 horas</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'mais-9')">
+            <span class="option-icon">😴</span>
+            <span class="option-text">Mais de 9 horas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pergunta 16 -->
+      <div class="question" data-question="16">
+        <h2>Quantos copos de água você bebe por dia?</h2>
+        <p>Seu nível de hidratação também influencia na sua perda de peso.</p>
+        <div class="options">
+          <div class="option" onclick="selectOption(this, 'apenas-cafe')">
+            <span class="option-icon">☕</span>
+            <span class="option-text">Bebo apenas café ou chá</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '1-2-copos')">
+            <span class="option-icon">🥤</span>
+            <span class="option-text">1—2 copos por dia</span>
+          </div>
+          <div class="option" onclick="selectOption(this, '2-6-copos')">
+            <span class="option-icon">🥤</span>
+            <span class="option-text">2—6 copos por dia</span>
+          </div>
+          <div class="option" onclick="selectOption(this, 'mais-6-copos')">
+            <span class="option-icon">🥤</span>
+            <span class="option-text">Mais de 6 copos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tela de Carregamento -->
+      <div class="question" data-question="17">
+        <div style="text-align: center; padding: 40px 20px">
+          <img
+            src="logo.png"
+            alt="Gelo Secreto"
+            style="max-width: 150px; margin-bottom: 30px"
+          />
+
+          <h2 style="margin-bottom: 20px">
+            Aguarde enquanto preparamos<br />o Plano do Gelo Secreto——
+          </h2>
+
+          <div
+            style="
+              background: white;
+              border-radius: 15px;
+              padding: 30px;
+              margin: 30px 0;
+              box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <img
+              src="imagemdateladepreparando.jpg"
+              alt="Transformação"
+              style="width: 100%; max-width: 300px; border-radius: 10px"
+            />
+          </div>
+
+          <p style="font-size: 14px; color: #666; margin: 20px 0">
+            Transformações reais com o Plano do Gelo Secreto. Você também pode
+            conseguir!
+          </p>
+
+          <img
+            src="logo.png"
+            alt="Gelo Secreto"
+            style="max-width: 100px; margin: 20px 0"
+          />
+
+          <div style="margin: 30px 0">
+            <div
+              style="
+                background: #e0e0e0;
+                height: 8px;
+                border-radius: 10px;
+                overflow: hidden;
+              "
+            >
+              <div
+                id="loading-bar"
+                style="
+                  height: 100%;
+                  background: linear-gradient(90deg, #1e88e5, #1565c0);
+                  width: 0%;
+                  transition: width 0.1s ease;
+                "
+              ></div>
+            </div>
+            <p id="loading-text" style="margin-top: 10px; color: #666">
+              Carregando... 0%
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== POPUP: Apostila (Lailla) — BRASIL +55, envio ÚNICO por IFRAME, sem rastreamento ===== -->
+    <script>
+      // Quiz navigation helpers
+      (function () {
+        window.quizAnswers = {};
+
+        function updateProgress(currentIndex) {
+          var total = document.querySelectorAll(".question").length;
+          var pct = Math.round((currentIndex / total) * 100);
+          var progressText = document.getElementById("progress-text");
+          var progressPercent = document.getElementById("progress-percent");
+          var fill = document.getElementById("progress-fill");
+          if (progressText)
+            progressText.textContent =
+              "Pergunta " + currentIndex + " de " + total;
+          if (progressPercent) progressPercent.textContent = pct + "%";
+          if (fill) fill.style.width = pct + "%";
+        }
+
+        window.selectOption = function (el, value) {
+          try {
+            // mark selection
+            var container = el.closest(".options") || el.closest(".question");
+            if (container) {
+              var opts = container.querySelectorAll(".option");
+              opts.forEach(function (o) {
+                o.classList.remove("selected");
+              });
+            }
+            el.classList.add("selected");
+
+            // store answer by question
+            var q = el.closest(".question");
+            if (q) {
+              var qnum = parseInt(q.getAttribute("data-question") || "0", 10);
+              if (qnum) window.quizAnswers["q" + qnum] = value;
+              // auto-advance for single-choice questions (small delay for UX)
+              setTimeout(function () {
+                window.nextQuestion();
+              }, 250);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        };
+
+        window.nextQuestion = function () {
+          var questions = Array.prototype.slice.call(
+            document.querySelectorAll(".question")
+          );
+          var current = document.querySelector(".question.active");
+          var idx = questions.indexOf(current);
+          if (idx === -1) {
+            // if none active, activate first
+            if (questions[0]) {
+              questions[0].classList.add("active");
+              updateProgress(1);
+            }
+            return;
+          }
+          // move to next
+          var next = questions[idx + 1];
+          if (next) {
+            current.classList.remove("active");
+            next.classList.add("active");
+            updateProgress(idx + 2);
+            // personalize title if name exists
+            try {
+              personalizeQuestion(next);
+            } catch (_) {}
+            // if we reached the loading screen (question 17), start loading
+            try {
+              if (
+                next.getAttribute &&
+                next.getAttribute("data-question") === "17"
+              ) {
+                startLoadingAndRedirect();
+              }
+            } catch (_) {}
+            // focus name input if present
+            var nameInput = next.querySelector("#user-name");
+            if (nameInput) nameInput.focus();
+          } else {
+            // reached end - you can trigger submission or show a final screen
+            current.classList.remove("active");
+            // optionally show last (loading) slide if present
+            var last = questions[questions.length - 1];
+            if (last) {
+              last.classList.add("active");
+              try {
+                if (
+                  last.getAttribute &&
+                  last.getAttribute("data-question") === "17"
+                ) {
+                  startLoadingAndRedirect();
+                }
+              } catch (_) {}
+            }
+            updateProgress(questions.length);
+          }
+        };
+
+        // Loading animation + redirect to resultado.html
+        var __loadingStarted = false;
+        function startLoadingAndRedirect() {
+          if (__loadingStarted) return;
+          __loadingStarted = true;
+          var bar = document.getElementById("loading-bar");
+          var txt = document.getElementById("loading-text");
+          if (!bar || !txt) {
+            // fallback: redirect after short delay
+            setTimeout(function () {
+              window.location.href = "resultado.html";
+            }, 800);
+            return;
+          }
+          var pct = 0;
+          txt.textContent = "Carregando... 0%";
+          bar.style.width = "0%";
+          var step = function () {
+            pct += Math.floor(5 + Math.random() * 12); // random-ish increment
+            if (pct > 100) pct = 100;
+            bar.style.width = pct + "%";
+            txt.textContent = "Carregando... " + pct + "%";
+            if (pct >= 100) {
+              // save answers and redirect
+              try {
+                localStorage.setItem(
+                  "quiz_answers",
+                  JSON.stringify(window.quizAnswers || {})
+                );
+              } catch (_) {}
+              // small pause then redirect
+              setTimeout(function () {
+                window.location.href = "resultado.html";
+              }, 600);
+            } else {
+              setTimeout(step, 120 + Math.random() * 180);
+            }
+          };
+          setTimeout(step, 200);
+        }
+
+        function personalizeQuestion(q) {
+          if (!q) return;
+          var qnum = parseInt(q.getAttribute("data-question") || "0", 10);
+          var h = q.querySelector("h2");
+          if (!h) return;
+          // store original content
+          if (!h.dataset.original) h.dataset.original = h.innerHTML;
+          var name =
+            window.quizAnswers.name ||
+            (function () {
+              try {
+                return localStorage.getItem("quiz_name");
+              } catch (_) {
+                return "";
+              }
+            })();
+          if (!name || qnum <= 4) {
+            // restore original
+            if (h.dataset.original) {
+              h.innerHTML = h.dataset.original;
+              h.removeAttribute("data-personalized");
+            }
+            return;
+          }
+          // inject name if not already
+          if (h.dataset.personalized === "1") {
+            var span = h.querySelector(".personal-name");
+            if (span) span.textContent = name + ",";
+            // ensure greeting visible when personalizing
+            try {
+              updateGreeting(name);
+            } catch (_) {}
+            return;
+          }
+          h.innerHTML =
+            '<span class="personal-name">' +
+            name +
+            ",</span> " +
+            h.dataset.original;
+          h.dataset.personalized = "1";
+          try {
+            updateGreeting(name);
+          } catch (_) {}
+        }
+
+        function updateGreeting(name) {
+          var g = document.getElementById("greeting");
+          var span = document.getElementById("user-name-greeting");
+          // only show greeting if user is at/after question 4
+          try {
+            var active = document.querySelector(".question.active");
+            var qnum = active
+              ? parseInt(active.getAttribute("data-question") || "0", 10)
+              : 0;
+            if (name && span && qnum >= 4) {
+              span.textContent = name;
+              if (g) g.style.display = "block";
+            } else if (g) {
+              g.style.display = "none";
+            }
+          } catch (_) {
+            if (g) g.style.display = "none";
+          }
+        }
+
+        window.checkName = function () {
+          var v =
+            (document.getElementById("user-name") || { value: "" }).value || "";
+          var btn = document.getElementById("name-continue");
+          var name = v.trim();
+          if (btn) btn.disabled = name.length < 2;
+          try {
+            if (name) {
+              window.quizAnswers.name = name;
+              localStorage.setItem("quiz_name", name);
+            } else {
+              delete window.quizAnswers.name;
+              localStorage.removeItem("quiz_name");
+            }
+          } catch (_) {}
+          // update greeting only if we're at/after the name question
+          try {
+            var active = document.querySelector(".question.active");
+            var qnum = active
+              ? parseInt(active.getAttribute("data-question") || "0", 10)
+              : 0;
+            if (qnum >= 4) updateGreeting(name);
+            else updateGreeting("");
+          } catch (_) {}
+        };
+
+        window.toggleBenefit = function (el, key) {
+          el.classList.toggle("selected");
+          var checkbox = el.querySelector(".benefit-checkbox");
+          if (checkbox) checkbox.classList.toggle("checked");
+          // store/unstore
+          window.quizAnswers["benefit_" + key] =
+            checkbox && checkbox.classList.contains("checked")
+              ? true
+              : !!window.quizAnswers["benefit_" + key]
+              ? false
+              : true;
+        };
+
+        window.updateWeight = function (v) {
+          var d = document.getElementById("weight-display");
+          if (d) d.textContent = v;
+        };
+        window.updateHeight = function (v) {
+          var d = document.getElementById("height-display");
+          if (d) d.textContent = v;
+        };
+        window.updateGoalWeight = function (v) {
+          var d = document.getElementById("goal-weight-display");
+          if (d) d.textContent = v;
+        };
+
+        window.answerTestimonial = function () {
+          window.nextQuestion();
+        };
+
+        // initialize progress
+        document.addEventListener("DOMContentLoaded", function () {
+          var first = document.querySelector(".question.active");
+          var questions = document.querySelectorAll(".question");
+          var idx = 1;
+          if (first) {
+            // compute index
+            for (var i = 0; i < questions.length; i++) {
+              if (questions[i] === first) {
+                idx = i + 1;
+                break;
+              }
+            }
+          }
+          updateProgress(idx);
+          // restore name if present
+          try {
+            var stored = localStorage.getItem("quiz_name");
+            if (stored) {
+              window.quizAnswers.name = stored;
+              var ni = document.getElementById("user-name");
+              if (ni) ni.value = stored;
+              // enable continue button and update greeting if appropriate
+              try {
+                checkName();
+                var active = document.querySelector(".question.active");
+                var qnum = active
+                  ? parseInt(active.getAttribute("data-question") || "0", 10)
+                  : 0;
+                if (qnum >= 4) updateGreeting(stored);
+              } catch (_) {}
+            }
+          } catch (_) {}
+        });
+      })();
+    </script>
+    <div id="sf-overlay" aria-hidden="true" style="display: none"></div>
+    <script>
+      (function () {
+        // ---- GUARDA GLOBAL (evita rodar 2x simultâneo) ----
+        if (window.__SF_POPUP_ACTIVE) return;
+        window.__SF_POPUP_ACTIVE = true;
+
+        // ---- CONFIG ----
+        var API_URL = "SUA API AQUI";
+        var OPEN_DELAY_MS = 6000;
+        var CLOSE_AFTER_OK_MS = 600;
+        var DEDUPE_HOURS = 6;
+        var FIELD_PHONE_NAME = "phone"; // mude para "telefone" se seu workflow exigir esse nome
+        var SEND_VAR_466 = false; // ligue true SÓ se seu fluxo antigo exigir var_466=telefone
+
+        // ---- UTILS ----
+        var QS = new URLSearchParams(location.search || "");
+        var DEBUG = QS.get("sf_debug") === "1";
+        function log() {
+          if (DEBUG && console && console.log)
+            console.log.apply(console, arguments);
+        }
+        function $(s, el) {
+          return (el || document).querySelector(s);
+        }
+        function onlyDigits(v) {
+          return (v || "").replace(/\D+/g, "");
+        }
+        // Brasil apenas (+55) — aceita entradas com/sem DDI e normaliza
+        function intlPhone(d) {
+          if (!d) return "";
+          var nd = ("" + d).replace(/\D+/g, "").replace(/^0+/, "");
+          if (nd.startsWith("0055")) nd = nd.slice(2);
+          if (nd.startsWith("55")) nd = nd.slice(2);
+          return "+55" + nd;
+        }
+        function get(id) {
+          var el = document.getElementById(id);
+          return el ? el.value : "";
+        }
+        function set(id, v) {
+          var el = document.getElementById(id);
+          if (el) el.value = v;
+        }
+
+        // ---- DEDUPE local (6h por telefone) ----
+        var DEDUPE_KEY = "sf_sent_map_v3";
+        function getMap() {
+          try {
+            return JSON.parse(localStorage.getItem(DEDUPE_KEY) || "{}");
+          } catch (_) {
+            return {};
+          }
+        }
+        function setSent(phone) {
+          try {
+            var m = getMap();
+            m[phone] = Date.now();
+            localStorage.setItem(DEDUPE_KEY, JSON.stringify(m));
+          } catch (_) {}
+        }
+        function recentlySent(phone) {
+          try {
+            var m = getMap();
+            var ts = m[phone];
+            return !!ts && Date.now() - ts < DEDUPE_HOURS * 3600 * 1000;
+          } catch (_) {
+            return false;
+          }
+        }
+
+        // ---- CSS + Overlay básico ----
+        (function css() {
+          if (document.getElementById("sf-theme")) return;
+          var st = document.createElement("style");
+          st.id = "sf-theme";
+          st.textContent = `
+            :root{--rose:#e14fa8;--rose-200:#fbcfe8;--rose-50:#fff7fb;--violet:#8a2be2;--violet-200:#eadff9;--text:#1f1d2b}
+            #sf-overlay{position:fixed;inset:0;z-index:99999;background:rgba(34,0,51,.38);backdrop-filter:blur(2px);
+              transition:opacity .24s ease;opacity:0;padding:16px;display:none}
+            #sf-overlay.show{display:block;opacity:1}
+            #sf-fixed{max-width:420px;width:100%;margin:clamp(20px,8vh,48px) auto;background:linear-gradient(180deg,#fff,var(--rose-50));
+              border:1px solid var(--rose-200);border-radius:18px;box-shadow:0 20px 50px rgba(226,79,168,.18),0 4px 16px rgba(138,43,226,.12);
+              overflow:hidden;animation:sf-pop .28s ease-out both}
+            @keyframes sf-pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+            #sf-fixed .sf-h{padding:16px;border-bottom:1px solid var(--violet-200);background:#fff}
+            #sf-fixed .sf-h b{display:block;font-weight:700;font-size:clamp(16px,2.2vw,20px)}
+            #sf-fixed .sf-h small{color:#5f5b6b;font-size:13px}
+            #sfClose{float:right;border:0;background:transparent;cursor:pointer;opacity:.8}
+            #sfForm{display:grid;gap:8px;padding:14px 16px 16px}
+            #sfForm input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--violet-200);font-size:15px}
+            #sfSubmit{padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--violet),var(--rose));color:#fff;font-weight:700}
+            #sfOk,#sfErr{font-size:14px;padding:8px 12px;display:none;border-radius:10px}
+            #sfOk{background:#ecfdf5;border:1px solid #a7f3d0}
+            #sfErr{background:#fef2f2;border:1px solid #fecaca}
+          `;
+          document.head.appendChild(st);
+        })();
+
+        function ensureOverlay() {
+          var ov = document.getElementById("sf-overlay");
+          if (!ov) {
+            ov = document.createElement("div");
+            ov.id = "sf-overlay";
+            document.body.appendChild(ov);
+          }
+          if (!ov.querySelector("#sf-fixed")) {
+            ov.setAttribute("aria-hidden", "true");
+            ov.innerHTML =
+              "" +
+              '<section id="sf-fixed" role="dialog" aria-modal="true" aria-label="Receba a apostila">' +
+              '<button id="sfClose" aria-label="Fechar">✕</button>' +
+              '<div class="sf-h"><b>Receba gratuitamente a Apostila Completa de Nail Designer</b><small>Preencha seus dados</small></div>' +
+              '<div id="sfOk"></div><div id="sfErr"></div>' +
+              '<form id="sfForm" novalidate>' +
+              '<input type="text" id="sfNome"  name="name"  placeholder="Nome" required autocomplete="name">' +
+              '<input type="tel"  id="sfPhone" name="phone" placeholder="WhatsApp (com DDD)" inputmode="tel" required>' +
+              '<input type="email" id="sfEmail" name="email" placeholder="E-mail (opcional)" autocomplete="email">' +
+              '<button id="sfSubmit" type="submit">Quero receber</button>' +
+              "</form>" +
+              "</section>";
+          }
+          return ov;
+        }
+
+        // ---- POST form-encoded via IFRAME (sem rastros) ----
+        function flatten(p) {
+          var out = {};
+          out["name"] = p.name || "";
+          out["email"] = p.email || "";
+          out[FIELD_PHONE_NAME] = p.phone || "";
+          out["idempotency_key"] = p.idempotency_key || "";
+          out["dedupe_key"] = p.dedupe_key || "";
+          if (SEND_VAR_466) out["var_466"] = p.phone || "";
+
+          // tags simples
+          if (p.tags) {
+            out["tags"] = Array.isArray(p.tags)
+              ? p.tags.join(",")
+              : String(p.tags);
+          }
+
+          // metadados essenciais apenas (sem URL/user_agent/UTM/payload JSON)
+          var m = p.metadata || {};
+          Object.keys(m).forEach(function (k) {
+            out["metadata_" + k] = m[k] == null ? "" : String(m[k]);
+          });
+
+          return out;
+        }
+        function postIframe(url, flat) {
+          return new Promise(function (resolve) {
+            var ifr = document.createElement("iframe");
+            var name = "sf_ifr_" + Math.random().toString(36).slice(2);
+            ifr.name = name;
+            ifr.style.display = "none";
+            document.body.appendChild(ifr);
+            var f = document.createElement("form");
+            f.action = url;
+            f.method = "POST";
+            f.target = name;
+            f.style.display = "none";
+            Object.keys(flat).forEach(function (k) {
+              var inp = document.createElement("input");
+              inp.type = "hidden";
+              inp.name = k;
+              inp.value = flat[k] == null ? "" : String(flat[k]);
+              f.appendChild(inp);
+            });
+            document.body.appendChild(f);
+            var done = false;
+            function finish(ok) {
+              if (done) return;
+              done = true;
+              try {
+                f.remove();
+              } catch {}
+              try {
+                ifr.remove();
+              } catch {}
+              resolve({ ok });
+            }
+            ifr.addEventListener("load", function () {
+              finish(true);
+            });
+            setTimeout(function () {
+              finish(true);
+            }, 1500);
+            f.submit();
+          });
+        }
+
+        // ---- Boot + Submit ----
+        function show(ov) {
+          ov.classList.add("show");
+          ov.setAttribute("aria-hidden", "false");
+          ov.style.display = "block";
+        }
+        function hide(ov) {
+          ov.classList.remove("show");
+          ov.setAttribute("aria-hidden", "true");
+          ov.style.display = "none";
+        }
+
+        function boot(ov) {
+          ov.addEventListener("click", function (ev) {
+            if (ev.target === ov) hide(ov);
+          });
+          var closeBtn = $("#sfClose", ov);
+          if (closeBtn) {
+            closeBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+              hide(ov);
+            });
+          }
+          setTimeout(function () {
+            show(ov);
+          }, OPEN_DELAY_MS);
+
+          var form = $("#sfForm", ov),
+            ok = $("#sfOk", ov),
+            err = $("#sfErr", ov),
+            btn = $("#sfSubmit", ov);
+          if (!form) return;
+
+          if (form.dataset.sfBound === "1") return;
+          form.dataset.sfBound = "1";
+
+          var LOCK = false;
+
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            if (LOCK) return;
+            LOCK = true;
+
+            ok.style.display = "none";
+            err.style.display = "none";
+
+            var name = $("#sfNome") ? $("#sfNome").value.trim() : "";
+            var raw = $("#sfPhone") ? onlyDigits($("#sfPhone").value) : "";
+            var email = $("#sfEmail") ? $("#sfEmail").value.trim() : "";
+
+            if (!name) {
+              err.textContent = "Informe seu nome.";
+              err.style.display = "block";
+              LOCK = false;
+              return;
+            }
+            if (!(raw.length === 10 || raw.length === 11)) {
+              err.textContent = "Informe um WhatsApp válido (DDD + número).";
+              err.style.display = "block";
+              LOCK = false;
+              return;
+            }
+
+            var phone = intlPhone(raw);
+
+            if (recentlySent(phone)) {
+              ok.textContent = "Já enviado para este WhatsApp recentemente. 😉";
+              ok.style.display = "block";
+              finalize();
+              return;
+            }
+
+            var idemp =
+              Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+            var payload = {
+              name,
+              email: email || "",
+              phone,
+              idempotency_key: idemp,
+              dedupe_key: "phone:" + phone,
+              ...(SEND_VAR_466 ? { var_466: phone } : {}),
+              tags: ["apostila_molde_f1", "lead_gratuito", "popup"],
+              metadata: {
+                // apenas campos essenciais, sem page_url nem rastros
+                intent: "apostila_molde_f1",
+                gift_name: "Apostila Completa de Molde F1",
+                gift_type: "pdf",
+                ts: new Date().toISOString(),
+              },
+            };
+
+            if (btn) {
+              btn.disabled = true;
+              btn.textContent = "Enviando…";
+            }
+
+            var flat = flatten(payload);
+            var r = await postIframe(API_URL, flat);
+            log("[SF] IFRAME resp:", r);
+
+            setSent(phone);
+            ok.textContent = "Enviado! Confira seu WhatsApp.";
+            ok.style.display = "block";
+            finalize();
+
+            function finalize() {
+              setTimeout(function () {
+                hide(ov);
+                try {
+                  form.reset();
+                } catch (_) {}
+                if (btn) {
+                  btn.disabled = false;
+                  btn.textContent = "Quero receber";
+                }
+                LOCK = false;
+              }, CLOSE_AFTER_OK_MS);
+            }
+          });
+        }
+
+        // Popup desativado: removida a inicialização para evitar que o modal apareça
+        // var ov=ensureOverlay(); boot(ov);
+      })();
+    </script>
+  </body>
+</html>

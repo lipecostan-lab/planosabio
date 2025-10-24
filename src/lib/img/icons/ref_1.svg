@@ -1,0 +1,6 @@
+<svg width="249" height="85" xmlns="http://www.w3.org/2000/svg">
+  <rect width="249" height="85" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="#666">
+    Reference 1
+  </text>
+</svg>
