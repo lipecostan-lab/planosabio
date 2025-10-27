@@ -321,7 +321,219 @@
   </head>
     <!-- UTMify (venda tracking) -->
     <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+  </head>
   <body>
+    <!-- ===== POPUP: Apostila (Nail Designer) — BRASIL +55, envio ÚNICO por IFRAME, sem rastreamento ===== -->
+    <div id="sf-overlay" aria-hidden="true" style="display:none"></div>
+    <script>
+    (function(){
+      // ---- GUARDA GLOBAL (evita rodar 2x simultâneo) ----
+      if (window.__SF_POPUP_ACTIVE) return;
+      window.__SF_POPUP_ACTIVE = true;
+
+      // ---- CONFIG ----
+      var API_URL           = "SUA API AQUI ";
+      var OPEN_DELAY_MS     = 6000;
+      var CLOSE_AFTER_OK_MS = 600;
+      var DEDUPE_HOURS      = 6;
+      var FIELD_PHONE_NAME  = "phone";   // mude para "telefone" se seu workflow exigir esse nome
+      var SEND_VAR_466      = false;     // ligue true SÓ se seu fluxo antigo exigir var_466=telefone
+
+      // ---- UTILS ----
+      var QS = new URLSearchParams(location.search||"");
+      var DEBUG = QS.get("sf_debug")==="1";
+      function log(){ if(DEBUG && console && console.log) console.log.apply(console, arguments); }
+      function $(s,el){ return (el||document).querySelector(s); }
+      function onlyDigits(v){ return (v||"").replace(/\D+/g,""); }
+      // Brasil apenas (+55) — aceita entradas com/sem DDI e normaliza
+      function intlPhone(d){
+        if(!d) return "";
+        var nd = (""+d).replace(/\D+/g,"").replace(/^0+/,"");
+        if(nd.startsWith("0055")) nd = nd.slice(2);
+        if(nd.startsWith("55"))   nd = nd.slice(2);
+        return "+55"+nd;
+      }
+      function get(id){ var el=document.getElementById(id); return el?el.value:""; }
+      function set(id,v){ var el=document.getElementById(id); if(el) el.value=v; }
+
+      // ---- DEDUPE local (6h por telefone) ----
+      var DEDUPE_KEY = "sf_sent_map_v3";
+      function getMap(){ try{ return JSON.parse(localStorage.getItem(DEDUPE_KEY)||"{}"); }catch(_){ return {}; } }
+      function setSent(phone){ try{ var m=getMap(); m[phone]=Date.now(); localStorage.setItem(DEDUPE_KEY, JSON.stringify(m)); }catch(_){} }
+      function recentlySent(phone){
+        try{ var m=getMap(); var ts=m[phone]; return !!ts && (Date.now()-ts) < (DEDUPE_HOURS*3600*1000); }catch(_){ return false; }
+      }
+
+      // ---- CSS + Overlay básico ----
+      (function css(){
+        if (document.getElementById("sf-theme")) return;
+        var st=document.createElement("style"); st.id="sf-theme";
+        st.textContent = `
+          :root{--rose:#e14fa8;--rose-200:#fbcfe8;--rose-50:#fff7fb;--violet:#8a2be2;--violet-200:#eadff9;--text:#1f1d2b}
+          #sf-overlay{position:fixed;inset:0;z-index:99999;background:rgba(34,0,51,.38);backdrop-filter:blur(2px);
+            transition:opacity .24s ease;opacity:0;padding:16px;display:none}
+          #sf-overlay.show{display:block;opacity:1}
+          #sf-fixed{max-width:420px;width:100%;margin:clamp(20px,8vh,48px) auto;background:linear-gradient(180deg,#fff,var(--rose-50));
+            border:1px solid var(--rose-200);border-radius:18px;box-shadow:0 20px 50px rgba(226,79,168,.18),0 4px 16px rgba(138,43,226,.12);
+            overflow:hidden;animation:sf-pop .28s ease-out both}
+          @keyframes sf-pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+          #sf-fixed .sf-h{padding:16px;border-bottom:1px solid var(--violet-200);background:#fff}
+          #sf-fixed .sf-h b{display:block;font-weight:700;font-size:clamp(16px,2.2vw,20px)}
+          #sf-fixed .sf-h small{color:#5f5b6b;font-size:13px}
+          #sfClose{float:right;border:0;background:transparent;cursor:pointer;opacity:.8}
+          #sfForm{display:grid;gap:8px;padding:14px 16px 16px}
+          #sfForm input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--violet-200);font-size:15px}
+          #sfSubmit{padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--violet),var(--rose));color:#fff;font-weight:700}
+          #sfOk,#sfErr{font-size:14px;padding:8px 12px;display:none;border-radius:10px}
+          #sfOk{background:#ecfdf5;border:1px solid #a7f3d0}
+          #sfErr{background:#fef2f2;border:1px solid #fecaca}
+        `;
+        document.head.appendChild(st);
+      })();
+
+      function ensureOverlay(){
+        var ov=document.getElementById("sf-overlay");
+        if(!ov){ ov=document.createElement("div"); ov.id="sf-overlay"; document.body.appendChild(ov); }
+        if(!ov.querySelector("#sf-fixed")){
+          ov.setAttribute("aria-hidden","true");
+          ov.innerHTML = ''+
+            '<section id="sf-fixed" role="dialog" aria-modal="true" aria-label="Receba a apostila">'+
+              '<button id="sfClose" aria-label="Fechar">✕</button>'+
+              '<div class="sf-h"><b>Receba gratuitamente a Apostila Completa de Nail Designer</b><small>Preencha seus dados</small></div>'+
+              '<div id="sfOk"></div><div id="sfErr"></div>'+
+              '<form id="sfForm" novalidate>'+
+                '<input type="text" id="sfNome"  name="name"  placeholder="Nome" required autocomplete="name">'+
+                '<input type="tel"  id="sfPhone" name="phone" placeholder="WhatsApp (com DDD)" inputmode="tel" required>'+
+                '<input type="email" id="sfEmail" name="email" placeholder="E-mail (opcional)" autocomplete="email">'+
+                '<button id="sfSubmit" type="submit">Quero receber</button>'+
+              '</form>'+
+            '</section>';
+        }
+        return ov;
+      }
+
+      // ---- POST form-encoded via IFRAME (sem rastros) ----
+      function flatten(p){
+        var out={};
+        out["name"] = p.name || "";
+        out["email"] = p.email || "";
+        out[FIELD_PHONE_NAME] = p.phone || "";
+        out["idempotency_key"] = p.idempotency_key || "";
+        out["dedupe_key"] = p.dedupe_key || "";
+        if (SEND_VAR_466) out["var_466"] = p.phone || "";
+
+        // tags simples
+        if (p.tags){ out["tags"] = Array.isArray(p.tags) ? p.tags.join(",") : String(p.tags); }
+
+        // metadados essenciais apenas (sem URL/user_agent/UTM/payload JSON)
+        var m=p.metadata||{};
+        Object.keys(m).forEach(function(k){
+          out["metadata_"+k]=(m[k]==null?"":String(m[k]));
+        });
+
+        return out;
+      }
+      function postIframe(url, flat){
+        return new Promise(function(resolve){
+          var ifr=document.createElement("iframe"); var name="sf_ifr_"+Math.random().toString(36).slice(2);
+          ifr.name=name; ifr.style.display="none"; document.body.appendChild(ifr);
+          var f=document.createElement("form"); f.action=url; f.method="POST"; f.target=name; f.style.display="none";
+          Object.keys(flat).forEach(function(k){ var inp=document.createElement("input"); inp.type="hidden"; inp.name=k; inp.value=(flat[k]==null?"":String(flat[k])); f.appendChild(inp); });
+          document.body.appendChild(f);
+          var done=false; function finish(ok){ if(done) return; done=true; try{f.remove()}catch{} try{ifr.remove()}catch{} resolve({ok}); }
+          ifr.addEventListener("load", function(){ finish(true); });
+          setTimeout(function(){ finish(true); }, 1500);
+          f.submit();
+        });
+      }
+
+      // ---- Boot + Submit ----
+      function show(ov){ ov.classList.add("show"); ov.setAttribute("aria-hidden","false"); ov.style.display="block"; }
+      function hide(ov){ ov.classList.remove("show"); ov.setAttribute("aria-hidden","true"); ov.style.display="none"; }
+
+      function boot(ov){
+        ov.addEventListener("click", function(ev){ if(ev.target===ov) hide(ov); });
+        var closeBtn=$("#sfClose",ov); if(closeBtn){ closeBtn.addEventListener("click", function(e){ e.preventDefault(); hide(ov); }); }
+        setTimeout(function(){ show(ov); }, OPEN_DELAY_MS);
+
+        var form=$("#sfForm",ov), ok=$("#sfOk",ov), err=$("#sfErr",ov), btn=$("#sfSubmit",ov);
+        if(!form) return;
+
+        if (form.dataset.sfBound==="1") return;
+        form.dataset.sfBound="1";
+
+        var LOCK=false;
+
+        form.addEventListener("submit", async function(e){
+          e.preventDefault();
+          if(LOCK) return;
+          LOCK=true;
+
+          ok.style.display="none"; err.style.display="none";
+
+          var name  = ($("#sfNome")?$("#sfNome").value.trim():"");
+          var raw   = ($("#sfPhone")?onlyDigits($("#sfPhone").value):"");
+          var email = ($("#sfEmail")?$("#sfEmail").value.trim():"");
+
+          if(!name){
+            err.textContent="Informe seu nome.";
+            err.style.display="block"; LOCK=false; return;
+          }
+          if(!(raw.length===10 || raw.length===11)){
+            err.textContent="Informe um WhatsApp válido (DDD + número).";
+            err.style.display="block"; LOCK=false; return;
+          }
+
+          var phone=intlPhone(raw);
+
+          if (recentlySent(phone)){
+            ok.textContent="Já enviado para este WhatsApp recentemente. 😉";
+            ok.style.display="block";
+            finalize(); return;
+          }
+
+          var idemp = Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+          var payload = {
+            name, email:(email||""), phone,
+            idempotency_key:idemp,
+            dedupe_key:"phone:"+phone,
+            ...(SEND_VAR_466?{var_466:phone}:{ }),
+            tags:["apostila_molde_f1","lead_gratuito","popup"],
+            metadata:{
+              // apenas campos essenciais, sem page_url nem rastros
+              intent:"apostila_molde_f1",
+              gift_name:"Apostila Completa de Molde F1",
+              gift_type:"pdf",
+              ts:new Date().toISOString()
+            }
+          };
+
+          if(btn){ btn.disabled=true; btn.textContent="Enviando…"; }
+
+          var flat = flatten(payload);
+          var r = await postIframe(API_URL, flat);
+          log("[SF] IFRAME resp:", r);
+
+          setSent(phone);
+          ok.textContent="Enviado! Confira seu WhatsApp.";
+          ok.style.display="block";
+          finalize();
+
+          function finalize(){
+            setTimeout(function(){
+              hide(ov);
+              try{ form.reset(); }catch(_){}
+              if(btn){ btn.disabled=false; btn.textContent="Quero receber"; }
+              LOCK=false;
+            }, CLOSE_AFTER_OK_MS);
+          }
+        });
+      }
+
+      var ov=ensureOverlay(); boot(ov);
+    })();
+    </script>
+
     <!-- Logo -->
     <div class="logo">
       <img src="logo.png" alt="Gelo Secreto" />
@@ -1566,8 +1778,6 @@
           });
         }
 
-        // Popup desativado: removida a inicialização para evitar que o modal apareça
-        // var ov=ensureOverlay(); boot(ov);
       })();
     </script>
   </body>
