@@ -338,6 +338,15 @@
       var DEDUPE_HOURS      = 6;
       var FIELD_PHONE_NAME  = "phone";   // mude para "telefone" se seu workflow exigir esse nome
       var SEND_VAR_466      = false;     // ligue true SÓ se seu fluxo antigo exigir var_466=telefone
+      
+      // ---- TEXTOS DO POPUP ----
+      var POPUP_TITLE       = "Acesso a Conteúdo Exclusivo de Emagrecimento";
+      var POPUP_SUBTITLE    = "Receba dicas e estratégias do Protocolo do Gelo Secreto";
+      var POPUP_BUTTON_TEXT = "Enviar";
+      var TAG_LIST          = ["protocolo_gelo_secreto","lead_emagrecimento","popup"];
+      var INTENT            = "captura_lead_gelo_secreto";
+      var GIFT_NAME         = "Acesso Exclusivo - Protocolo do Gelo Secreto";
+      var GIFT_TYPE         = "lead";
 
       // ---- UTILS ----
       var QS = new URLSearchParams(location.search||"");
@@ -369,21 +378,21 @@
         if (document.getElementById("sf-theme")) return;
         var st=document.createElement("style"); st.id="sf-theme";
         st.textContent = `
-          :root{--rose:#e14fa8;--rose-200:#fbcfe8;--rose-50:#fff7fb;--violet:#8a2be2;--violet-200:#eadff9;--text:#1f1d2b}
-          #sf-overlay{position:fixed;inset:0;z-index:99999;background:rgba(34,0,51,.38);backdrop-filter:blur(2px);
+          :root{--ice-blue:#1e88e5;--ice-blue-light:#e8f4ff;--ice-blue-dark:#0d47a1;--text:#1f1d2b}
+          #sf-overlay{position:fixed;inset:0;z-index:99999;background:rgba(13,71,161,.38);backdrop-filter:blur(2px);
             transition:opacity .24s ease;opacity:0;padding:16px;display:none}
           #sf-overlay.show{display:block;opacity:1}
-          #sf-fixed{max-width:420px;width:100%;margin:clamp(20px,8vh,48px) auto;background:linear-gradient(180deg,#fff,var(--rose-50));
-            border:1px solid var(--rose-200);border-radius:18px;box-shadow:0 20px 50px rgba(226,79,168,.18),0 4px 16px rgba(138,43,226,.12);
+          #sf-fixed{max-width:420px;width:100%;margin:clamp(20px,8vh,48px) auto;background:linear-gradient(180deg,#fff,var(--ice-blue-light));
+            border:1px solid var(--ice-blue);border-radius:18px;box-shadow:0 20px 50px rgba(30,136,229,.18),0 4px 16px rgba(13,71,161,.12);
             overflow:hidden;animation:sf-pop .28s ease-out both}
           @keyframes sf-pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-          #sf-fixed .sf-h{padding:16px;border-bottom:1px solid var(--violet-200);background:#fff}
-          #sf-fixed .sf-h b{display:block;font-weight:700;font-size:clamp(16px,2.2vw,20px)}
-          #sf-fixed .sf-h small{color:#5f5b6b;font-size:13px}
+          #sf-fixed .sf-h{padding:16px;border-bottom:1px solid var(--ice-blue);background:#fff}
+          #sf-fixed .sf-h b{display:block;font-weight:700;font-size:clamp(16px,2.2vw,20px);color:var(--ice-blue-dark)}
+          #sf-fixed .sf-h small{color:#0d47a1;font-size:13px}
           #sfClose{float:right;border:0;background:transparent;cursor:pointer;opacity:.8}
           #sfForm{display:grid;gap:8px;padding:14px 16px 16px}
-          #sfForm input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--violet-200);font-size:15px}
-          #sfSubmit{padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--violet),var(--rose));color:#fff;font-weight:700}
+          #sfForm input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--ice-blue);font-size:15px}
+          #sfSubmit{padding:10px 14px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--ice-blue),var(--ice-blue-dark));color:#fff;font-weight:700}
           #sfOk,#sfErr{font-size:14px;padding:8px 12px;display:none;border-radius:10px}
           #sfOk{background:#ecfdf5;border:1px solid #a7f3d0}
           #sfErr{background:#fef2f2;border:1px solid #fecaca}
@@ -397,15 +406,15 @@
         if(!ov.querySelector("#sf-fixed")){
           ov.setAttribute("aria-hidden","true");
           ov.innerHTML = ''+
-            '<section id="sf-fixed" role="dialog" aria-modal="true" aria-label="Receba a apostila">'+
+            '<section id="sf-fixed" role="dialog" aria-modal="true" aria-label="Receba o protocolo">'+
               '<button id="sfClose" aria-label="Fechar">✕</button>'+
-              '<div class="sf-h"><b>Receba gratuitamente a Apostila Completa de Nail Designer</b><small>Preencha seus dados</small></div>'+
+              '<div class="sf-h"><b>'+POPUP_TITLE+'</b><small>'+POPUP_SUBTITLE+'</small></div>'+
               '<div id="sfOk"></div><div id="sfErr"></div>'+
               '<form id="sfForm" novalidate>'+
                 '<input type="text" id="sfNome"  name="name"  placeholder="Nome" required autocomplete="name">'+
                 '<input type="tel"  id="sfPhone" name="phone" placeholder="WhatsApp (com DDD)" inputmode="tel" required>'+
                 '<input type="email" id="sfEmail" name="email" placeholder="E-mail (opcional)" autocomplete="email">'+
-                '<button id="sfSubmit" type="submit">Quero receber</button>'+
+                '<button id="sfSubmit" type="submit">'+POPUP_BUTTON_TEXT+'</button>'+
               '</form>'+
             '</section>';
         }
@@ -498,12 +507,13 @@
             idempotency_key:idemp,
             dedupe_key:"phone:"+phone,
             ...(SEND_VAR_466?{var_466:phone}:{ }),
-            tags:["apostila_molde_f1","lead_gratuito","popup"],
+            tags:TAG_LIST,
             metadata:{
               // apenas campos essenciais, sem page_url nem rastros
-              intent:"apostila_molde_f1",
-              gift_name:"Apostila Completa de Molde F1",
-              gift_type:"pdf",
+              intent:INTENT,
+              gift_name:GIFT_NAME,
+              gift_type:GIFT_TYPE,
+              product:"Protocolo do Gelo Secreto",
               ts:new Date().toISOString()
             }
           };
