@@ -1806,5 +1806,55 @@
 
       })();
     </script>
+      <!-- Meta Pixel: advanced matching helper (hash email/phone and init pixel on form submit) -->
+      <script>
+      (function(){
+        var PIXEL_ID = '1518973295936293';
+        async function sha256Hex(str){
+          if(!str) return '';
+          try{
+            var data = new TextEncoder().encode(str);
+            var hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+          }catch(e){ console.warn('sha256 error', e); return '' }
+        }
+
+        function attachToForm(form){
+          if(!form || form.dataset.fbAttached) return;
+          form.dataset.fbAttached = '1';
+          form.addEventListener('submit', async function(ev){
+            try{
+              var emailEl = form.querySelector('input[type="email"], #sfEmail, input[name="email"]');
+              var phoneEl = form.querySelector('input[type="tel"], #sfPhone, input[name="phone"]');
+              var email = emailEl ? (emailEl.value||'') : '';
+              var phone = phoneEl ? (phoneEl.value||'') : '';
+              var em = email ? await sha256Hex(String(email).trim().toLowerCase()) : undefined;
+              var ph = phone ? await sha256Hex(String(phone).replace(/\D+/g,'')) : undefined;
+              var payload = {};
+              if(em) payload.em = em;
+              if(ph) payload.ph = ph;
+              if(Object.keys(payload).length){
+                try{ fbq('init', PIXEL_ID, payload); }catch(e){ console.warn('fbq init failed', e); }
+              }
+              try{ fbq('track', 'Lead'); }catch(e){}
+            }catch(err){ console.warn('fb attach error', err); }
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+          // attach to any existing forms (popup forms use id=sfForm)
+          document.querySelectorAll('#sfForm, form').forEach(attachToForm);
+          // observe DOM for dynamically added forms
+          var mo = new MutationObserver(function(muts){
+            muts.forEach(function(m){
+              m.addedNodes && m.addedNodes.forEach(function(node){
+                try{ if(node.querySelectorAll) node.querySelectorAll('#sfForm, form').forEach(attachToForm); }catch(_){ }
+              });
+            });
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        });
+      })();
+      </script>
   </body>
 </html>
