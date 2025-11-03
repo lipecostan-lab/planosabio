@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz - Gelo Secreto</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      
       * {
         margin: 0;
         padding: 0;
@@ -12,94 +14,151 @@
       }
 
       body {
-        font-family: "Arial", sans-serif;
-        background: linear-gradient(135deg, #f0f7ff, #e8f0fb);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+        background-attachment: fixed;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         padding: 20px;
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 206, 84, 0.2), transparent 50%),
+                    radial-gradient(circle at 40% 80%, rgba(158, 129, 255, 0.15), transparent 50%);
+        pointer-events: none;
+        z-index: 0;
       }
 
       .logo {
         margin: 20px 0;
         text-align: center;
+        z-index: 10;
+        position: relative;
       }
 
       .logo img {
-        max-width: 150px;
+        max-width: 180px;
         height: auto;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3));
+        transition: transform 0.3s ease;
+      }
+
+      .logo img:hover {
+        transform: scale(1.05);
       }
 
       .progress-container {
         width: 100%;
-        max-width: 400px;
-        margin-bottom: 30px;
+        max-width: 500px;
+        margin-bottom: 40px;
+        z-index: 10;
+        position: relative;
       }
 
       #greeting {
-        max-width: 500px;
+        max-width: 600px;
         width: 100%;
         text-align: center;
-        color: #1565c0;
-        font-weight: 600;
-        margin-bottom: 10px;
-        display: none;
-      }
-      .personal-name {
-        color: #1565c0;
+        color: #ffce54;
         font-weight: 700;
-        margin-right: 6px;
+        font-size: 18px;
+        margin-bottom: 20px;
+        display: none;
+        z-index: 10;
+        position: relative;
+        text-shadow: 0 2px 10px rgba(255, 206, 84, 0.3);
+      }
+      
+      .personal-name {
+        color: #9e81ff;
+        font-weight: 800;
+        margin-right: 8px;
+        text-shadow: 0 2px 10px rgba(158, 129, 255, 0.5);
       }
 
       .progress-info {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
-        font-size: 14px;
-        color: #333;
-        font-weight: 500;
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #f0f0f5;
+        font-weight: 700;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
       }
 
       .progress-bar {
         width: 100%;
-        height: 8px;
-        background: #e0e0e0;
-        border-radius: 10px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
         overflow: hidden;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
       }
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #1e88e5, #1565c0);
-        border-radius: 10px;
-        transition: width 0.3s ease;
+        background: linear-gradient(90deg, #ffce54, #9e81ff, #7877c6);
+        background-size: 200% 100%;
+        border-radius: 20px;
+        transition: width 0.4s ease;
+        animation: shimmer 2s infinite;
+        box-shadow: 0 2px 15px rgba(158, 129, 255, 0.4);
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
       }
 
       .quiz-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        padding: 40px;
-        max-width: 500px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        padding: 50px;
+        max-width: 600px;
         width: 100%;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
+        z-index: 10;
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .quiz-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 
+                    inset 0 1px 0 rgba(255, 255, 255, 0.15);
       }
 
       .question {
         display: none;
-        animation: fadeIn 0.5s ease;
+        animation: slideInUp 0.6s ease;
       }
 
       .question.active {
         display: block;
       }
 
-      @keyframes fadeIn {
+      @keyframes slideInUp {
         from {
           opacity: 0;
-          transform: translateY(20px);
+          transform: translateY(30px);
         }
         to {
           opacity: 1;
@@ -108,191 +167,293 @@
       }
 
       h2 {
-        color: #333;
-        font-size: 28px;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 800;
         line-height: 1.3;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        letter-spacing: -0.5px;
       }
 
       .highlight {
-        color: #1e88e5;
-        font-weight: bold;
+        background: linear-gradient(135deg, #ffce54, #9e81ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 900;
+        text-shadow: none;
       }
 
       p {
-        color: #666;
-        font-size: 16px;
-        margin-bottom: 30px;
-        line-height: 1.5;
+        color: #e8e8f0;
+        font-size: 19px;
+        margin-bottom: 35px;
+        line-height: 1.6;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
       }
 
       .options {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-        margin: 30px 0;
+        gap: 20px;
+        margin: 40px 0;
       }
 
       .option {
-        background: #f8fbff;
-        border: 2px solid #e8f0fb;
-        border-radius: 15px;
-        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 25px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         display: flex;
         align-items: center;
         text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .option::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 206, 84, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .option:hover::before {
+        left: 100%;
       }
 
       .option:hover {
-        border-color: #1e88e5;
-        background: #f0f7ff;
-        transform: translateY(-2px);
+        border-color: #ffce54;
+        background: rgba(255, 206, 84, 0.1);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(255, 206, 84, 0.2);
       }
 
       .option.selected {
-        border-color: #1e88e5;
-        background: #e8f0fb;
-        transform: translateY(-2px);
+        border-color: #9e81ff;
+        background: rgba(158, 129, 255, 0.15);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(158, 129, 255, 0.3);
       }
 
       .option-icon {
-        font-size: 24px;
-        margin-right: 15px;
+        font-size: 28px;
+        margin-right: 20px;
         flex-shrink: 0;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
       }
 
       .option-text {
-        font-size: 16px;
-        color: #333;
-        line-height: 1.4;
+        font-size: 18px;
+        color: #f5f5f8;
+        line-height: 1.5;
         flex: 1;
+        font-weight: 700;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       }
 
       .name-input {
-        background: #f8fbff;
-        border: 2px solid #e8f0fb;
-        border-radius: 15px;
-        padding: 20px;
-        font-size: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 25px;
+        font-size: 17px;
         width: 100%;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         text-align: center;
+        color: #ffffff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .name-input::placeholder {
+        color: #d0d0e0;
+        font-weight: 500;
       }
 
       .name-input:focus {
         outline: none;
-        border-color: #1e88e5;
+        border-color: #ffce54;
+        background: rgba(255, 206, 84, 0.1);
+        box-shadow: 0 0 30px rgba(255, 206, 84, 0.3);
       }
 
       .continue-btn {
-        background: linear-gradient(135deg, #1e88e5, #1565c0);
-        color: white;
+        background: linear-gradient(135deg, #ffce54, #9e81ff);
+        color: #000000;
         border: none;
         border-radius: 50px;
-        padding: 18px 60px;
+        padding: 20px 70px;
         font-size: 18px;
-        font-weight: bold;
+        font-weight: 800;
         cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-top: 25px;
         width: 100%;
-        max-width: 300px;
+        max-width: 350px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 30px rgba(158, 129, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .continue-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .continue-btn:hover::before {
+        left: 100%;
       }
 
       .continue-btn:hover {
-        background: linear-gradient(135deg, #1565c0, #0d47a1);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(30, 136, 229, 0.25);
+        background: linear-gradient(135deg, #9e81ff, #ffce54);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(158, 129, 255, 0.4);
       }
 
       .continue-btn:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
         transform: none;
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .result-container {
-        background: #f0f7ff;
-        border: 2px solid #1e88e5;
-        border-radius: 20px;
-        padding: 30px;
-        margin-top: 20px;
+        background: rgba(255, 206, 84, 0.1);
+        backdrop-filter: blur(15px);
+        border: 2px solid #ffce54;
+        border-radius: 24px;
+        padding: 40px;
+        margin-top: 30px;
         text-align: center;
+        box-shadow: 0 20px 40px rgba(255, 206, 84, 0.2);
       }
 
       .result-title {
-        color: #1e88e5;
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 20px;
+        color: #ffce54;
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 25px;
+        text-shadow: 0 2px 15px rgba(255, 206, 84, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
 
       .result-diagram {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 25px;
+        margin: 25px 0;
       }
 
       .testimonial {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px 0;
         text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .testimonial:hover {
+        transform: translateY(-5px);
       }
 
       .stars {
-        color: #ffd700;
-        font-size: 20px;
-        margin: 10px 0;
+        color: #ffce54;
+        font-size: 24px;
+        margin: 15px 0;
+        filter: drop-shadow(0 2px 8px rgba(255, 206, 84, 0.5));
       }
 
       .benefits-list {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-        margin: 30px 0;
+        gap: 20px;
+        margin: 40px 0;
       }
 
       .benefit-item {
-        background: #f8fbff;
-        border: 2px solid #e8f0fb;
-        border-radius: 15px;
-        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         display: flex;
         align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .benefit-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(158, 129, 255, 0.1), transparent);
+        transition: left 0.6s ease;
+      }
+
+      .benefit-item:hover::before {
+        left: 100%;
       }
 
       .benefit-item:hover,
       .benefit-item.selected {
-        border-color: #1e88e5;
-        background: #e8f0fb;
+        border-color: #9e81ff;
+        background: rgba(158, 129, 255, 0.15);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(158, 129, 255, 0.3);
       }
 
       .benefit-checkbox {
-        width: 20px;
-        height: 20px;
-        border: 2px solid #ddd;
-        border-radius: 4px;
-        margin-right: 15px;
+        width: 24px;
+        height: 24px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        margin-right: 20px;
         transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.05);
       }
 
       .benefit-checkbox.checked {
-        background: #1e88e5;
-        border-color: #1e88e5;
+        background: linear-gradient(135deg, #ffce54, #9e81ff);
+        border-color: #9e81ff;
+        box-shadow: 0 4px 15px rgba(158, 129, 255, 0.4);
       }
 
       .benefit-checkbox.checked::after {
         content: "✓";
-        color: white;
-        font-size: 14px;
-        font-weight: bold;
+        color: #000000;
+        font-size: 16px;
+        font-weight: 900;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -300,22 +461,59 @@
       }
 
       @media (max-width: 480px) {
-        .quiz-container {
-          padding: 30px 20px;
-          margin: 10px;
-        }
-
-        h2 {
-          font-size: 24px;
-        }
-
-        .option {
+        body {
           padding: 15px;
         }
 
-        .option-text {
-          font-size: 14px;
+        .quiz-container {
+          padding: 30px 25px;
+          margin: 15px;
+          border-radius: 20px;
         }
+
+        h2 {
+          font-size: 26px;
+        }
+
+        .option {
+          padding: 20px;
+        }
+
+        .option-text {
+          font-size: 16px;
+        }
+
+        .continue-btn {
+          padding: 18px 50px;
+          font-size: 16px;
+        }
+
+        .progress-container {
+          max-width: 100%;
+        }
+
+        .logo img {
+          max-width: 140px;
+        }
+      }
+
+      /* Animações adicionais para dar mais dinamismo */
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+
+      .logo img {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .quiz-container {
+        animation: pulse 4s ease-in-out infinite;
       }
     </style>
     <!-- Meta Pixel Code -->
@@ -701,7 +899,7 @@
       <!-- Pergunta 4 -->
       <div class="question" data-question="4">
         <h2>Qual seu <span class="highlight">nome</span>?</h2>
-        <p style="color: #666; font-size: 14px">
+        <p style="color: #e8e8f0; font-size: 16px; font-weight: 600;">
           Para montar seu plano personalizado, precisamos do seu nome.<br />Seus
           dados estão protegidos 🔒
         </p>
@@ -824,7 +1022,7 @@
               "
             />
           </div>
-          <p style="font-size: 14px; color: #666; margin: 20px 0">
+          <p style="font-size: 16px; color: #e8e8f0; margin: 20px 0; font-weight: 600;">
             o Gelo Secreto age enquanto você dorme, queimando gordura de forma
             acelerada!
           </p>
@@ -862,7 +1060,7 @@
       <!-- Pergunta 10 -->
       <div class="question" data-question="10">
         <h2 style="color: #ff6600">🏆 Histórias Reais de Transformação!</h2>
-        <p style="color: #666; font-size: 14px">
+        <p style="color: #e8e8f0; font-size: 16px; font-weight: 600;">
           📍 Depoimento: Fernanda - Porto Alegre-RS
         </p>
 
@@ -883,10 +1081,11 @@
 
           <p
             style="
-              font-size: 14px;
-              color: #333;
+              font-size: 16px;
+              color: #e8e8f0;
               line-height: 1.4;
               margin: 15px 0;
+              font-weight: 600;
             "
           >
             "Eu já tinha tentado de tudo para emagrecer, mas nada funcionava.
@@ -895,9 +1094,9 @@
             fome diminuiu drasticamente e estou emagrecendo naturalmente."
           </p>
 
-          <div style="font-weight: bold; color: #333; margin-top: 15px">
+          <div style="font-weight: bold; color: #ffffff; margin-top: 15px">
             Fernanda Oliveira<br />
-            <span style="font-weight: normal; color: #666; font-size: 12px"
+            <span style="font-weight: normal; color: #e8e8f0; font-size: 14px"
               >Porto Alegre, RS</span
             >
           </div>
@@ -918,8 +1117,9 @@
             style="
               font-size: 72px;
               font-weight: bold;
-              color: #333;
+              color: #ffffff;
               margin-bottom: 10px;
+              text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             "
           >
             <span id="weight-display">70</span
@@ -944,8 +1144,8 @@
             />
           </div>
 
-          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
-          <p style="font-size: 12px; color: #999; margin-top: 20px">
+          <p style="color: #e8e8f0; font-size: 16px; font-weight: 600;">Arraste para ajustar</p>
+          <p style="font-size: 14px; color: #d0d0e0; margin-top: 20px; font-weight: 600;">
             Baseado nisso, ajustaremos a dosagem ideal para os melhores
             resultados!
           </p>
@@ -964,8 +1164,9 @@
             style="
               font-size: 72px;
               font-weight: bold;
-              color: #333;
+              color: #ffffff;
               margin-bottom: 10px;
+              text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             "
           >
             <span id="height-display">170</span
@@ -990,8 +1191,8 @@
             />
           </div>
 
-          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
-          <p style="font-size: 12px; color: #999; margin-top: 20px">
+          <p style="color: #e8e8f0; font-size: 16px; font-weight: 600;">Arraste para ajustar</p>
+          <p style="font-size: 14px; color: #d0d0e0; margin-top: 20px; font-weight: 600;">
             Baseado nisso, ajustaremos a dosagem ideal para os melhores
             resultados!
           </p>
@@ -1012,8 +1213,9 @@
             style="
               font-size: 72px;
               font-weight: bold;
-              color: #333;
+              color: #ffffff;
               margin-bottom: 10px;
+              text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             "
           >
             <span id="goal-weight-display">70</span
@@ -1038,8 +1240,8 @@
             />
           </div>
 
-          <p style="color: #666; font-size: 14px">Arraste para ajustar</p>
-          <p style="font-size: 12px; color: #999; margin-top: 20px">
+          <p style="color: #e8e8f0; font-size: 16px; font-weight: 600;">Arraste para ajustar</p>
+          <p style="font-size: 14px; color: #d0d0e0; margin-top: 20px; font-weight: 600;">
             Baseado nisso, ajustaremos a dosagem ideal para os melhores
             resultados!
           </p>
@@ -1153,7 +1355,7 @@
             />
           </div>
 
-          <p style="font-size: 14px; color: #666; margin: 20px 0">
+          <p style="font-size: 16px; color: #e8e8f0; margin: 20px 0; font-weight: 600;">
             Transformações reais com o Plano do Gelo Secreto. Você também pode
             conseguir!
           </p>
@@ -1183,7 +1385,7 @@
                 "
               ></div>
             </div>
-            <p id="loading-text" style="margin-top: 10px; color: #666">
+            <p id="loading-text" style="margin-top: 10px; color: #e8e8f0; font-size: 16px; font-weight: 600;">
               Carregando... 0%
             </p>
           </div>
