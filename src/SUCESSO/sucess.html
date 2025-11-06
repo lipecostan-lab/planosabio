@@ -42,7 +42,12 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
 
-    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+    <script
+      src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+      data-utmify-prevent-subids
+      async
+      defer
+    ></script>
 
     <style>
       * {
@@ -902,13 +907,22 @@
   <body>
     <!-- Redline Section -->
     <div class="redline-container">
-      <div class="redline-subtitle">Pela primeira vez no Brasil o programa do Gelo Secreto que utiliza</div>
+      <div class="redline-subtitle">
+        Pela primeira vez no Brasil o programa do Gelo Secreto que utiliza
+      </div>
       <h1 class="redline-headline">
-        Esse simples truque usando <span class="redline-word-yellow">termogênese adaptativa</span><br>
-        está fazendo <span class="redline-word-purple">qualquer mulher eliminar até 13kg</span><br>
+        Esse simples truque usando
+        <span class="redline-word-yellow">termogênese adaptativa</span><br />
+        está fazendo
+        <span class="redline-word-purple"
+          >qualquer mulher eliminar até 13kg</span
+        ><br />
         em apenas 7 dias
       </h1>
-      <div class="redline-footer">hormônio leptina está acelerando o emagrecimento de mais de 150 mil mulheres.</div>
+      <div class="redline-footer">
+        hormônio leptina está acelerando o emagrecimento de mais de 150 mil
+        mulheres.
+      </div>
     </div>
 
     <!-- Container do vídeo (fora do container principal) -->
@@ -1335,6 +1349,22 @@
         "https://scripts.converteai.net/134f9e89-27f7-4f0e-aa6f-1db6e83eeca5/players/68fb1f80bdf9abb2347d00c3/v4/player.js"),
         (s.async = !0),
         document.head.appendChild(s);
+    </script>
+    
+    <!-- Script de redirecionamento do botão voltar -->
+    <script>
+      var urlBackRedirect = 'https://pay.cakto.com.br/fs94ydm'; // lembre-se de usar a url sem espaços
+      // não altere nada abaixo dessa linha
+      urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
+              (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
+              document.location.search.replace('?', '').toString();
+      history.pushState({}, "", location.href);
+      history.pushState({}, "", location.href);
+      window.onpopstate = function () {
+          setTimeout(function () {
+              location.href = urlBackRedirect;
+          }, 1);
+      };
     </script>
   </body>
 </html>
