@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quiz - Gelo Secreto</title>
+    <script>
+    var urlBackRedirect = 'https://pay.cakto.com.br/fs94ydm'; // lembre-se de usar a url sem espaços
+    // não altere nada abaixo dessa linha
+    urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
+            (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
+            document.location.search.replace('?', '').toString();
+    history.pushState({}, "", location.href);
+    history.pushState({}, "", location.href);
+    window.onpopstate = function () {
+        setTimeout(function () {
+            location.href = urlBackRedirect;
+        }, 1);
+    };
+</script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
@@ -2356,22 +2370,6 @@
           mo.observe(document.body, { childList: true, subtree: true });
         });
       })();
-    </script>
-    
-    <!-- Script de redirecionamento do botão voltar -->
-    <script>
-      var urlBackRedirect = 'https://pay.cakto.com.br/fs94ydm'; // lembre-se de usar a url sem espaços
-      // não altere nada abaixo dessa linha
-      urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
-              (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
-              document.location.search.replace('?', '').toString();
-      history.pushState({}, "", location.href);
-      history.pushState({}, "", location.href);
-      window.onpopstate = function () {
-          setTimeout(function () {
-              location.href = urlBackRedirect;
-          }, 1);
-      };
     </script>
   </body>
 </html>
