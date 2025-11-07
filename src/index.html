@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="description" content="AquaSculpt" />
+    <script>
+    var urlBackRedirect = 'https://pay.cakto.com.br/fs94ydm'; // lembre-se de usar a url sem espaços
+    // não altere nada abaixo dessa linha
+    urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
+            (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
+            document.location.search.replace('?', '').toString();
+    history.pushState({}, "", location.href);
+    history.pushState({}, "", location.href);
+    window.onpopstate = function () {
+        setTimeout(function () {
+            location.href = urlBackRedirect;
+        }, 1);
+    };
+</script>
     <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -3109,22 +3123,6 @@
           }
         }, 300000);// 5 minutos
       });
-    </script>
-
-    <!-- Script de redirecionamento do botão voltar -->
-    <script>
-      var urlBackRedirect = 'https://pay.cakto.com.br/fs94ydm'; // lembre-se de usar a url sem espaços
-      // não altere nada abaixo dessa linha
-      urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
-              (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
-              document.location.search.replace('?', '').toString();
-      history.pushState({}, "", location.href);
-      history.pushState({}, "", location.href);
-      window.onpopstate = function () {
-          setTimeout(function () {
-              location.href = urlBackRedirect;
-          }, 1);
-      };
     </script>
   </body>
 </html>
